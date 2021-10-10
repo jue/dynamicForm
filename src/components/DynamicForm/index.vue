@@ -40,54 +40,6 @@
                   </div>
                 </div>
               </draggable>
-              <!-- <div class="components-title">
-                <svg-icon icon-class="component" />选择型组件
-              </div>-->
-              <!-- <draggable
-                class="components-draggable"
-                :list="selectComponents"
-                :group="{ name: 'componentsGroup', pull: 'clone', put: false }"
-                :clone="cloneComponent"
-                draggable=".components-item"
-                :sort="false"
-                @end="onEnd"
-              >
-                <div
-                  v-for="(element, index) in selectComponents"
-                  :key="index"
-                  class="components-item"
-                  @click="addComponent(element)"
-                >
-                  <div class="components-body">
-                    <svg-icon :icon-class="element.tagIcon" />
-                    {{ element.label }}
-                  </div>
-                </div>
-              </draggable>-->
-              <!-- <div class="components-title">
-                <svg-icon icon-class="component" />布局型组件
-              </div>-->
-              <!-- <draggable
-                class="components-draggable"
-                :list="layoutComponents"
-                :group="{ name: 'componentsGroup', pull: 'clone', put: false }"
-                :clone="cloneComponent"
-                draggable=".components-item"
-                :sort="false"
-                @end="onEnd"
-              >
-                <div
-                  v-for="(element, index) in layoutComponents"
-                  :key="index"
-                  class="components-item"
-                  @click="addComponent(element)"
-                >
-                  <div class="components-body">
-                    <svg-icon :icon-class="element.tagIcon" />
-                    {{ element.label }}
-                  </div>
-                </div>
-              </draggable>-->
             </div>
           </el-tab-pane>
           <el-tab-pane label="定制组件" name="custom">

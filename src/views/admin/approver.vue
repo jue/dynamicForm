@@ -1,70 +1,13 @@
 <template>
-  <div class="page">
-    <header class="page__header">
-      <div class="page-actions">
-        <div style="border-right:1px solid #c5c5c5;cursor: pointer;" @click="exit">
-          <i class="el-icon-arrow-left"></i>
-        </div>
-        <div>{{ title }}</div>
-      </div>
-      <div class="step-tab">
-        <div
-          v-for="(item, index) in steps"
-          :key="index"
-          class="step"
-          :class="[activeStep==item.key?'active':'']"
-          @click="changeSteps(item)"
-        >
-          <span class="step-index">{{index+1}}</span>
-          {{item.label}}
-        </div>
-        <div class="ghost-step step" :style="{transform: translateX}"></div>
-      </div>
-      <el-button size="small" class="publish-btn" @click="publish">发布</el-button>
-    </header>
-    <section class="page__content" v-if="mockData">
-      <BasicSetting
-        ref="basicSetting" 
-        :conf="mockData.basicSetting"
-        v-show="activeStep === 'basicSetting'" 
-        tabName="basicSetting"
-        @initiatorChange="onInitiatorChange" /> 
-
-      <DynamicForm
-        ref="formDesign"
-        :conf="mockData.formData"
-        v-show="activeStep === 'formDesign'" 
-        tabName="formDesign" />
-
-      <Process  
-        ref="processDesign"
-        :conf="mockData.processData"
-        tabName="processDesign" 
-        v-show="activeStep === 'processDesign'" 
-        @startNodeChange="onStartChange"/>
-
-      <AdvancedSetting
-        ref="advancedSetting"
-        :conf="mockData.advancedSetting"
-        v-show="activeStep === 'advancedSetting'" />
-
-    </section>
-    <div class="github">
-      <el-tooltip effect="dark" content="前往Github" placement="top">
-        <a href="https://github.com/SNFocus/approvalFlow" target="_blank" style="display: block;" rel="noopener noreferrer">
-          <svg t="1590391861889" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2582" width="40" height="40"><path d="M950.930286 512q0 143.433143-83.748571 257.974857t-216.283429 158.573714q-15.433143 2.852571-22.601143-4.022857t-7.168-17.115429l0-120.539429q0-55.442286-29.696-81.115429 32.548571-3.437714 58.587429-10.313143t53.686857-22.308571 46.299429-38.034286 30.281143-59.977143 11.702857-86.016q0-69.12-45.129143-117.686857 21.138286-52.004571-4.534857-116.589714-16.018286-5.12-46.299429 6.290286t-52.589714 25.161143l-21.723429 13.677714q-53.174857-14.848-109.714286-14.848t-109.714286 14.848q-9.142857-6.290286-24.283429-15.433143t-47.689143-22.016-49.152-7.68q-25.161143 64.585143-4.022857 116.589714-45.129143 48.566857-45.129143 117.686857 0 48.566857 11.702857 85.723429t29.988571 59.977143 46.006857 38.253714 53.686857 22.308571 58.587429 10.313143q-22.820571 20.553143-28.013714 58.88-11.995429 5.705143-25.746286 8.557714t-32.548571 2.852571-37.449143-12.288-31.744-35.693714q-10.825143-18.285714-27.721143-29.696t-28.306286-13.677714l-11.410286-1.682286q-11.995429 0-16.603429 2.56t-2.852571 6.582857 5.12 7.972571 7.460571 6.875429l4.022857 2.852571q12.580571 5.705143 24.868571 21.723429t17.993143 29.110857l5.705143 13.165714q7.460571 21.723429 25.161143 35.108571t38.253714 17.115429 39.716571 4.022857 31.744-1.974857l13.165714-2.267429q0 21.723429 0.292571 50.834286t0.292571 30.866286q0 10.313143-7.460571 17.115429t-22.820571 4.022857q-132.534857-44.032-216.283429-158.573714t-83.748571-257.974857q0-119.442286 58.88-220.306286t159.744-159.744 220.306286-58.88 220.306286 58.88 159.744 159.744 58.88 220.306286z" fill="#2c2c2c" p-id="2583"></path></svg>
-        </a>
-      </el-tooltip>
-    </div>
-  </div>
+  <DynamicForm
+    ref="formDesign"
+    :conf="mockData"
+    tabName="formDesign" />
 </template>
 
 <script>
 // @ is an alias to /src
-import Process from "@/components/Process";
 import DynamicForm from "@/components/DynamicForm";
-import BasicSetting from '@/components/BasicSetting'
-import AdvancedSetting from '@/components/AdvancedSetting'
 import { GET_MOCK_CONF } from '../../api'
 const beforeUnload = function (e) {
   var confirmationMessage = '离开网站可能会丢失您编辑得内容';
@@ -83,7 +26,6 @@ export default {
   data() {
     return {
       mockData: null, // 可选择诸如 $route.param，Ajax获取数据等方式自行注入
-      activeStep: "basicSetting", // 激活的步骤面板
       steps: [
         { label: "基础设置", key: "basicSetting" },
         { label: "表单设计", key: "formDesign" },
@@ -106,7 +48,10 @@ export default {
     }
   },
   mounted() {
-    GET_MOCK_CONF().then(data => this.mockData = data);
+    GET_MOCK_CONF().then(data => {
+      this.mockData = data.formData
+    });
+
   },
   methods: {
     changeSteps(item) {
@@ -116,16 +61,11 @@ export default {
       const getCmpData = name => this.$refs[name].getData()
       // basicSetting  formDesign processDesign 返回的是Promise 因为要做校验
       // advancedSetting返回的就是值
-      const p1 = getCmpData('basicSetting') 
-      const p2 = getCmpData('formDesign')
-      const p3 = getCmpData('processDesign')
-      Promise.all([p1, p2, p3])
+      const p1 = getCmpData('formDesign')
+      Promise.all([p1])
       .then(res => {
         const param = {
-          basicSetting: res[0].formData,
-          processData: res[2].formData,
-          formData: res[1].formData,
-          advancedSetting: getCmpData('advancedSetting')
+          formData: res[1].formData
         }
         this.sendToServer(param)
       })
@@ -141,47 +81,15 @@ export default {
         position: 'bottom-right'
       });
       console.log('配置数据', param)
-    },
-    exit() {
-      this.$confirm('离开此页面您得修改将会丢失, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '模拟返回!'
-          });
-        }).catch(() => { });
-    },
-    /**
-     * 同步基础设置发起人和流程节点发起人
-     */
-    onInitiatorChange (val, labels) {
-      const processCmp = this.$refs.processDesign
-      const startNode = processCmp.data
-      startNode.properties.initiator = val['dep&user']
-      startNode.content =  labels  || '所有人'
-      processCmp.forceUpdate()
-    },
-    /**
-     * 监听 流程节点发起人改变 并同步到基础设置 发起人数据
-     */
-    onStartChange(node){
-      const basicSetting = this.$refs.basicSetting
-      basicSetting.formData.initiator = { 'dep&user': node.properties.initiator }
     }
   },
   components: {
-    Process,
-    DynamicForm,
-    BasicSetting,
-    AdvancedSetting
+    DynamicForm
   }
 };
 </script>
 <style lang="stylus" scoped>
-$header-height = 54px;
+$header-height = 0px;
 .page {
   width: 100vw;
   height: 100vh;
@@ -286,11 +194,5 @@ $header-height = 54px;
   padding: 7px 20px;
   border-radius: 4px;
   font-size: 14px;
-}
-
-.github{
-  position fixed
-  bottom 10px
-  left 20px
 }
 </style>
